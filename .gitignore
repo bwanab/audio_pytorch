@@ -1,0 +1,14 @@
+*.pyc
+.DS_Store
+
+/.project
+/.pydevproject
+
+# checkpoint
+checkpoints/
+
+.vscode/**
+venv-ap/**
+data/**
+*.pt
+*.pth

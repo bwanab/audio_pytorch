@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 description = 'plays two othello players',
                 epilog = 'Text at the bottom of help')
 
-    parser.add_argument("-f", "--fold", default=9)
+    parser.add_argument("-f", "--fold", default=10)
     args = parser.parse_args()
     fold = int(args.fold)
 

@@ -23,6 +23,8 @@ def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
     end_time = time.time()
     print(f"Loss: {loss.item()} Time for epoch: {end_time-start_time}")
 
+MODEL_FILE = "/home/ubuntu/PTAudio/models/checkpoint.pt"
+
 def train(model, data_loader: DataLoader, loss_fn, 
           optimiser, device, epochs, epoch, fold):
     for i in range(epochs):
@@ -35,7 +37,7 @@ def train(model, data_loader: DataLoader, loss_fn,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(), 
         },
-        "checkpoint.pt"
+        MODEL_FILE
         )
         if i > 0 and i % 10 == 0 and fold is not None:
             run_test(fold, device)
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     n_epochs = int(args.epochs)
 
     ######## FOR TESTING ONLY #############
-    args.cpu = True
+    # args.cpu = True
     #######################################
 
     if args.cpu:
@@ -71,8 +73,8 @@ if __name__ == "__main__":
     EPOCHS = 10
     LEARNING_RATE=0.001
 
-    ANNOTATIONS_FILE = "/Users/bill/UrbanSound8K/metadata/UrbanSound8K.csv"
-    AUDIO_DIR = "/Users/bill/UrbanSound8K/audio"
+    ANNOTATIONS_FILE = "/home/ubuntu/PTAudio/data/UrbanSound8K/metadata/UrbanSound8K.csv"
+    AUDIO_DIR = "/home/ubuntu/PTAudio/data/UrbanSound8K/audio"
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 
@@ -101,8 +103,8 @@ if __name__ == "__main__":
     loss_fn = nn.CrossEntropyLoss()
     epoch = 0
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-    if os.path.exists("checkpoint.pt"):
-        checkpoint = torch.load("checkpoint.pt")
+    if os.path.exists(MODEL_FILE):
+        checkpoint = torch.load(MODEL_FILE)
         model.load_state_dict(checkpoint["model_state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         epoch = checkpoint["epoch"]

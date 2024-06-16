@@ -10,17 +10,20 @@ import time
 
 
 def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
+    start_time = time.time()
     for inputs, targets in data_loader:
         inputs, targets = inputs.to(device), targets.to(device)
+
         predictions = model(inputs)
         loss = loss_fn(predictions, targets)
+
         optimiser.zero_grad()
         loss.backward()
         optimiser.step()
-    print(f"Loss: {loss.item()}")
+    end_time = time.time()
+    print(f"Loss: {loss.item()} Time for epoch: {end_time-start_time}")
 
-
-def train(model, data_loader, loss_fn, 
+def train(model, data_loader: DataLoader, loss_fn, 
           optimiser, device, epochs, epoch, fold):
     for i in range(epochs):
         print(f"Epoch {i+1}")
@@ -34,7 +37,7 @@ def train(model, data_loader, loss_fn,
         },
         "checkpoint.pt"
         )
-        if i > 0 and i % 10 == 0:
+        if i > 0 and i % 10 == 0 and fold is not None:
             run_test(fold, device)
 
 import argparse
@@ -44,17 +47,26 @@ if __name__ == "__main__":
                 description = 'plays two othello players',
                 epilog = 'Text at the bottom of help')
 
-    parser.add_argument("-f", "--fold", default=9)
+    parser.add_argument("-f", "--fold", default=10)
     parser.add_argument("-e", "--epochs", default=50)
+    parser.add_argument("-c", "--cpu", action="store_true")
     args = parser.parse_args()
     fold = int(args.fold)
     n_epochs = int(args.epochs)
 
-    device = "cpu" # as always with M1 cpu is faster than mps
-    # if torch.cuda.is_available():
-    #     device = "cuda"
-    # elif torch.backends.mps.is_available():
-    #     device = "mps"
+    ######## FOR TESTING ONLY #############
+    args.cpu = True
+    #######################################
+
+    if args.cpu:
+        device = "cpu" # as always with M1 cpu is faster than mps
+    elif torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+
     BATCH_SIZE=128
     EPOCHS = 10
     LEARNING_RATE=0.001

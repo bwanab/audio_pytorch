@@ -67,10 +67,10 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs):
 
 if __name__ == "__main__":
     device = "cpu" # as always with M1 cpu is faster than mps
-    # if torch.cuda.is_available():
-    #     device = "cuda"
-    # elif torch.backends.mps.is_available():
-    #     device = "mps"
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"
 
     train_data_loader = DataLoader(train_data, batch_size=BATCH_SIZE)
 

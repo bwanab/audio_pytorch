@@ -14,10 +14,11 @@ class UrbanSoundDataset(Dataset):
                  train = True,
                  train_fold = 9):
         self.annotations = pd.read_csv(annotation_file)
-        if train:
-            self.annotations = self.annotations[self.annotations["fold"] != train_fold]
-        else:
-            self.annotations = self.annotations[self.annotations["fold"] == train_fold]
+        if train_fold is not None:
+            if train:
+                self.annotations = self.annotations[self.annotations["fold"] != train_fold]
+            else:
+                self.annotations = self.annotations[self.annotations["fold"] == train_fold]
             
         self.audio_dir = audio_dir
         self.transformation = transformation.to(device)
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         device = "cuda"
     elif torch.backends.mps.is_available():
-        device = "mps"
+       device = "mps"
 
     print(f"using {device}")
     
@@ -99,12 +100,13 @@ if __name__ == "__main__":
                             mel_spectrogram, 
                             SAMPLE_RATE,
                             NUM_SAMPLES,
-                            device)
+                            device,
+                            train_fold=None)
 
     print(f"there are {len(usd)} samples in the dataset")
     signal, label = usd[50]
 
-    import matplotlib.pyplot as plt
-    plt.plot(signal[0, :, 0].cpu())
-    plt.show()
+    # import matplotlib.pyplot as plt
+    # plt.plot(signal[0, :, 0].cpu())
+    # plt.show()
 

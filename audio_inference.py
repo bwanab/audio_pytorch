@@ -16,7 +16,7 @@ def predict(model, input, target, class_mapping):
 
 import argparse
 def run_test(fold, device):
-    cnn = CNNNetwork()
+    cnn = CNNNetwork().to(device)
     checkpoint = torch.load("checkpoint.pt")
     cnn.load_state_dict(checkpoint["model_state_dict"])
     cnn.eval()
@@ -55,7 +55,7 @@ def run_test(fold, device):
     for i, (audios, labels) in enumerate(usd):
         sample_audio = audios
         sample_label = labels
-        sample_audio.unsqueeze_(0)
+        sample_audio.unsqueeze_(0).to(device)
         # make inference
         output = cnn(sample_audio)
         predicted_label = torch.argmax(output.data).item()
@@ -79,10 +79,10 @@ if __name__ == "__main__":
     fold = int(args.fold)
 
     device = "cpu" # as always with M1 cpu is faster than mps
-    # if torch.cuda.is_available():
-    #     device = "cuda"
-    # elif torch.backends.mps.is_available():
-    #     device = "mps"
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"
 
     # load model built in train
     

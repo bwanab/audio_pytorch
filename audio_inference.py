@@ -1,7 +1,7 @@
 import torch
 import torchaudio
 from urbansounddataset import UrbanSoundDataset, ANNOTATIONS_FILE, AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
-from cnn_network import CNNNetwork
+from cnn_network3 import CNNNetwork3
 
 class_mapping = [str(i) for i in range(10)]
 
@@ -15,9 +15,9 @@ def predict(model, input, target, class_mapping):
         return predicted, expected
 
 import argparse
-def run_test(fold, device):
-    cnn = CNNNetwork().to(device)
-    checkpoint = torch.load("checkpoint.pt")
+def run_test(fold, device, MODEL_FILE):
+    cnn = CNNNetwork3().to(device)
+    checkpoint = torch.load(MODEL_FILE)
     cnn.load_state_dict(checkpoint["model_state_dict"])
     cnn.eval()
 
@@ -69,6 +69,10 @@ def run_test(fold, device):
     print(f"fold{fold}: {n_good} correct predictions out of {n_total}")
 
 if __name__ == "__main__":
+    MODEL_DIR = "models/"
+    # MODEL_DIR = "/home/ubuntu/PTAudio/models/"
+    MODEL_FILE = MODEL_DIR + "checkpoint.pt"
+
     parser = argparse.ArgumentParser(
                 prog = 'play',
                 description = 'plays two othello players',
@@ -86,7 +90,7 @@ if __name__ == "__main__":
 
     # load model built in train
     
-    run_test(fold, device)
+    run_test(fold, device, MODEL_FILE)
     
     # # print the list of missed items, sorted by count of misses
     # sorted_missed = sorted(missed.items(), key=lambda item: item[1], reverse=True)

@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import torch
 import pandas as pd
+import numpy as np
 import torchaudio
 import os
 
@@ -47,7 +48,7 @@ class UrbanSoundDataset(Dataset):
         return path
     
     def _get_audio_sample_label(self, index):
-        return self.annotations.iloc[index]["classID"]
+        return self.annotations.iloc[index]["classID"].astype(np.int32)
     
     def _resample_if_necessary(self, signal, sr):
         if sr != self.target_sample_rate:

@@ -4,7 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import torchaudio
 from urbansounddataset import UrbanSoundDataset
-from cnn_network import CNNNetwork
+from cnn_network3 import CNNNetwork3
 from audio_inference import run_test
 import time
 
@@ -23,7 +23,9 @@ def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
     end_time = time.time()
     print(f"Loss: {loss.item()} Time for epoch: {end_time-start_time}")
 
-MODEL_FILE = "/home/ubuntu/PTAudio/models/checkpoint.pt"
+MODEL_DIR = "models/"
+# MODEL_DIR = "/home/ubuntu/PTAudio/models/"
+MODEL_FILE = MODEL_DIR + "checkpoint_model3.pt"
 
 def train(model, data_loader: DataLoader, loss_fn, 
           optimiser, device, epochs, epoch, fold):
@@ -40,7 +42,7 @@ def train(model, data_loader: DataLoader, loss_fn,
         MODEL_FILE
         )
         if i > 0 and i % 10 == 0 and fold is not None:
-            run_test(fold, device)
+            run_test(fold, device, MODEL_FILE)
 
 import argparse
 if __name__ == "__main__":
@@ -50,7 +52,7 @@ if __name__ == "__main__":
                 epilog = 'Text at the bottom of help')
 
     parser.add_argument("-f", "--fold", default=10)
-    parser.add_argument("-e", "--epochs", default=50)
+    parser.add_argument("-e", "--epochs", default=150)
     parser.add_argument("-c", "--cpu", action="store_true")
     args = parser.parse_args()
     fold = int(args.fold)
@@ -73,8 +75,10 @@ if __name__ == "__main__":
     EPOCHS = 10
     LEARNING_RATE=0.001
 
-    ANNOTATIONS_FILE = "/home/ubuntu/PTAudio/data/UrbanSound8K/metadata/UrbanSound8K.csv"
-    AUDIO_DIR = "/home/ubuntu/PTAudio/data/UrbanSound8K/audio"
+    DATA_DIR = "/Users/bill/"
+    # DATA_DIR = "/home/ubuntu/PTAudio/data/"
+    ANNOTATIONS_FILE = DATA_DIR + "UrbanSound8K/metadata/UrbanSound8K.csv"
+    AUDIO_DIR = DATA_DIR + "UrbanSound8K/audio"
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 
@@ -96,10 +100,9 @@ if __name__ == "__main__":
     print(f"len of dataset {len(usd)}")
 
     train_data_loader = DataLoader(usd, batch_size=BATCH_SIZE)
-
     print(f"using {device}")
     # 3. build model
-    model = CNNNetwork().to(device)
+    model = CNNNetwork3().to(device)
     loss_fn = nn.CrossEntropyLoss()
     epoch = 0
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
